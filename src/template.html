@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contacto</title>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</head>
+<body>
+    <form id="contact-form">
+        <div>
+            <label for="name">Nombre (opcional):</label>
+            <input type="text" id="name" name="name">
+        </div>
+        <div>
+            <label for="subject">Tema:</label>
+            <input type="text" id="subject" name="subject" required>
+        </div>
+        <div>
+            <label for="body">Mensaje:</label>
+            <textarea id="body" name="body" required rows="5"></textarea>
+        </div>
+
+        <!-- El widget de Turnstile se inyectará aquí -->
+        <div class="cf-turnstile" data-sitekey="{{TURNSTILE_SITE_KEY}}"></div>
+
+        <button type="submit" id="submit-btn">Enviar Mensaje</button>
+    </form>
+
+    <div id="response-message" style="margin-top: 1rem;"></div>
+
+    <script>
+        const form = document.getElementById('contact-form');
+        const msgDiv = document.getElementById('response-message');
+        const btn = document.getElementById('submit-btn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            btn.disabled = true;
+            msgDiv.textContent = 'Enviando...';
+
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            try {
+                const response = await fetch('/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    msgDiv.style.color = 'green';
+                    msgDiv.textContent = result.message || '¡Mensaje enviado con éxito!';
+                    form.reset();
+                    // Reiniciar Turnstile si es necesario
+                    if (window.turnstile) window.turnstile.reset();
+                } else {
+                    msgDiv.style.color = 'red';
+                    msgDiv.textContent = result.error || 'Hubo un error al enviar.';
+                }
+            } catch (err) {
+                msgDiv.style.color = 'red';
+                msgDiv.textContent = 'Error de conexión.';
+            } finally {
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html>
