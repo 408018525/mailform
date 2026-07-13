@@ -5,45 +5,214 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>联系我们</title>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            font-family: Arial, "Microsoft YaHei", sans-serif;
+            background: #f5f7fb;
+            color: #1f2937;
+        }
+
+        .page {
+            width: 100%;
+            max-width: 620px;
+        }
+
+        .card {
+            width: 100%;
+            padding: 28px;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            box-shadow: 0 12px 35px rgba(15, 23, 42, 0.08);
+        }
+
+        h1 {
+            margin: 0 0 8px;
+            text-align: center;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            margin: 0 0 24px;
+            text-align: center;
+            color: #6b7280;
+            line-height: 1.6;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font: inherit;
+            color: #111827;
+            background: #ffffff;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        .turnstile-wrap {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        button {
+            width: 100%;
+            border: 0;
+            border-radius: 10px;
+            padding: 13px 18px;
+            font: inherit;
+            font-weight: 700;
+            color: #ffffff;
+            background: #2563eb;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #1d4ed8;
+        }
+
+        button:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
+        #response-message {
+            display: none;
+            margin-top: 18px;
+            padding: 12px 14px;
+            border-radius: 10px;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        #response-message.success {
+            display: block;
+            color: #166534;
+            background: #dcfce7;
+            border: 1px solid #86efac;
+        }
+
+        #response-message.error {
+            display: block;
+            color: #991b1b;
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+        }
+
+        #response-message.loading {
+            display: block;
+            color: #1e40af;
+            background: #dbeafe;
+            border: 1px solid #93c5fd;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                align-items: flex-start;
+                padding: 16px;
+            }
+
+            .card {
+                padding: 22px 18px;
+                border-radius: 14px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
 </head>
+
 <body>
-    <form id="contact-form">
-        <div>
-            <label for="name">姓名（选填）：</label>
-            <input type="text" id="name" name="name">
-        </div>
+    <main class="page">
+        <section class="card">
+            <h1>联系我们</h1>
+            <p class="subtitle">请填写下面的信息，我们会尽快查看您的留言。</p>
 
-        <div>
-            <label for="contact">联系方式（选填）：</label>
-            <input type="text" id="contact" name="contact">
-        </div>
+            <form id="contact-form">
+                <div class="form-group">
+                    <label for="name">姓名（选填）</label>
+                    <input type="text" id="name" name="name">
+                </div>
 
-        <div>
-            <label for="subject">主题：</label>
-            <input type="text" id="subject" name="subject" required>
-        </div>
+                <div class="form-group">
+                    <label for="contact">联系方式（选填）</label>
+                    <input type="text" id="contact" name="contact">
+                </div>
 
-        <div>
-            <label for="body">留言：</label>
-            <textarea id="body" name="body" required rows="5"></textarea>
-        </div>
+                <div class="form-group">
+                    <label for="subject">主题</label>
+                    <input type="text" id="subject" name="subject" required>
+                </div>
 
-        <div class="cf-turnstile" data-sitekey="{{TURNSTILE_SITE_KEY}}"></div>
+                <div class="form-group">
+                    <label for="body">留言</label>
+                    <textarea id="body" name="body" required></textarea>
+                </div>
 
-        <button type="submit" id="submit-btn">发送消息</button>
-    </form>
+                <div class="turnstile-wrap">
+                    <div class="cf-turnstile" data-sitekey="{{TURNSTILE_SITE_KEY}}"></div>
+                </div>
 
-    <div id="response-message" style="margin-top: 1rem;"></div>
+                <button type="submit" id="submit-btn">发送消息</button>
+            </form>
+
+            <div id="response-message" aria-live="polite"></div>
+        </section>
+    </main>
 
     <script>
         const form = document.getElementById('contact-form');
         const msgDiv = document.getElementById('response-message');
         const btn = document.getElementById('submit-btn');
 
+        function showMessage(type, text) {
+            msgDiv.className = type;
+            msgDiv.textContent = text;
+        }
+
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+
             btn.disabled = true;
-            msgDiv.textContent = '正在发送...';
+            showMessage('loading', '正在发送，请稍候……');
 
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
@@ -51,27 +220,36 @@
             try {
                 const response = await fetch('/', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
                     body: JSON.stringify(data)
                 });
 
                 const result = await response.json();
 
                 if (response.ok) {
-                    msgDiv.style.color = 'green';
-                    msgDiv.textContent = result.message || '消息发送成功！';
+                    showMessage(
+                        'success',
+                        result.message || '消息发送成功！'
+                    );
+
                     form.reset();
 
-                    if (window.turnstile) window.turnstile.reset();
+                    if (window.turnstile) {
+                        window.turnstile.reset();
+                    }
                 } else {
-                    msgDiv.style.color = 'red';
-                    msgDiv.textContent =
-                        result.error || '发送失败，请稍后重试。';
+                    showMessage(
+                        'error',
+                        result.error || '发送失败，请稍后重试。'
+                    );
                 }
             } catch (err) {
-                msgDiv.style.color = 'red';
-                msgDiv.textContent =
-                    '网络连接错误，请稍后重试。';
+                showMessage(
+                    'error',
+                    '网络连接错误，请稍后重试。'
+                );
             } finally {
                 btn.disabled = false;
             }
