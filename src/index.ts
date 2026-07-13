@@ -30,12 +30,7 @@ export default {
 
                 // 1. 服务端验证 Turnstile
                 const verifyBody = new URLSearchParams();
-
-                verifyBody.append(
-                    'secret',
-                    env.TURNSTILE_SECRET_KEY
-                );
-
+                verifyBody.append('secret', env.TURNSTILE_SECRET_KEY);
                 verifyBody.append(
                     'response',
                     data['cf-turnstile-response'] || ''
@@ -60,15 +55,12 @@ export default {
                         JSON.stringify({
                             error: '人机验证失败，请重新验证。'
                         }),
-                        {
-                            status: 400
-                        }
+                        { status: 400 }
                     );
                 }
 
                 // 2. 构建邮件内容
-                const subject =
-                    `[网站留言] ${data.subject}`;
+                const subject = `[网站留言] ${data.subject}`;
 
                 const body = [
                     `姓名：${data.name || '未填写'}`,
@@ -103,7 +95,11 @@ export default {
                             message: '消息发送成功！'
                         }),
                         {
-                            status: 200
+                            status: 200,
+                            headers: {
+                                'Content-Type':
+                                    'application/json; charset=utf-8'
+                            }
                         }
                     );
                 } catch (emailErr: any) {
@@ -113,11 +109,14 @@ export default {
                             details: emailErr.message
                         }),
                         {
-                            status: 500
+                            status: 500,
+                            headers: {
+                                'Content-Type':
+                                    'application/json; charset=utf-8'
+                            }
                         }
                     );
                 }
-
             } catch (err: any) {
                 return new Response(
                     JSON.stringify({
@@ -125,7 +124,11 @@ export default {
                         details: err.message
                     }),
                     {
-                        status: 500
+                        status: 500,
+                        headers: {
+                            'Content-Type':
+                                'application/json; charset=utf-8'
+                        }
                     }
                 );
             }
