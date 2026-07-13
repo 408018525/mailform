@@ -1,30 +1,36 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contacto</title>
+    <title>联系我们</title>
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 </head>
 <body>
     <form id="contact-form">
         <div>
-            <label for="name">Nombre (opcional):</label>
+            <label for="name">姓名（选填）：</label>
             <input type="text" id="name" name="name">
         </div>
+
         <div>
-            <label for="subject">Tema:</label>
+            <label for="contact">联系方式（选填）：</label>
+            <input type="text" id="contact" name="contact">
+        </div>
+
+        <div>
+            <label for="subject">主题：</label>
             <input type="text" id="subject" name="subject" required>
         </div>
+
         <div>
-            <label for="body">Mensaje:</label>
+            <label for="body">留言：</label>
             <textarea id="body" name="body" required rows="5"></textarea>
         </div>
 
-        <!-- El widget de Turnstile se inyectará aquí -->
         <div class="cf-turnstile" data-sitekey="{{TURNSTILE_SITE_KEY}}"></div>
 
-        <button type="submit" id="submit-btn">Enviar Mensaje</button>
+        <button type="submit" id="submit-btn">发送消息</button>
     </form>
 
     <div id="response-message" style="margin-top: 1rem;"></div>
@@ -37,7 +43,7 @@
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             btn.disabled = true;
-            msgDiv.textContent = 'Enviando...';
+            msgDiv.textContent = '正在发送...';
 
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
@@ -53,17 +59,19 @@
 
                 if (response.ok) {
                     msgDiv.style.color = 'green';
-                    msgDiv.textContent = result.message || '¡Mensaje enviado con éxito!';
+                    msgDiv.textContent = result.message || '消息发送成功！';
                     form.reset();
-                    // Reiniciar Turnstile si es necesario
+
                     if (window.turnstile) window.turnstile.reset();
                 } else {
                     msgDiv.style.color = 'red';
-                    msgDiv.textContent = result.error || 'Hubo un error al enviar.';
+                    msgDiv.textContent =
+                        result.error || '发送失败，请稍后重试。';
                 }
             } catch (err) {
                 msgDiv.style.color = 'red';
-                msgDiv.textContent = 'Error de conexión.';
+                msgDiv.textContent =
+                    '网络连接错误，请稍后重试。';
             } finally {
                 btn.disabled = false;
             }
