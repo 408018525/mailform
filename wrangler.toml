@@ -13,3 +13,4 @@ fallthrough = true
 
 [[send_email]]
 name = "SEB"
+destination_address = "admin@flore.top"
