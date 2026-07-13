@@ -2,9 +2,8 @@
 
 name = "worker-mailform"
 main = "src/index.ts"
-compatibility_date = "2024-04-01"
+compatibility_date = "2026-07-13"
 
-# 保留你之后在 Cloudflare 后台手动添加的运行变量
 keep_vars = true
 
 [[rules]]
