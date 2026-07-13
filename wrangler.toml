@@ -1,13 +1,11 @@
 #:schema node_modules/wrangler/config-schema.json
+
 name = "worker-mailform"
-account_id = "changeme"
 main = "src/index.ts"
 compatibility_date = "2024-04-01"
 
-[vars]
-TURNSTILE_SITE_KEY = "changeme"
-DESTINATION_EMAIL = "changeme"
-FROM_EMAIL = "changeme"
+# 保留你之后在 Cloudflare 后台手动添加的运行变量
+keep_vars = true
 
 [[rules]]
 type = "Text"
