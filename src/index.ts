@@ -92,7 +92,8 @@ export default {
 
                     return new Response(
                         JSON.stringify({
-                            message: '消息发送成功！'
+                            message: '消息发送成功！
+                                我们会在72小时内进行查看'
                         }),
                         {
                             status: 200,
