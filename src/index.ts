@@ -53,18 +53,20 @@ export default {
                 if (!outcome.success) {
                     return new Response(
                         JSON.stringify({
-                            error: '人机验证失败，请重新验证后发送。'
+                            error: '人机验证失败，请重新验证。'
                         }),
                         { status: 400 }
                     );
                 }
 
                 // 2. 构建邮件内容
-                const subject = `[mailform.flore.top留言消息] ${data.subject}`;
+                const subject = '[mailform.flore.top消息]';
 
                 const body = [
                     `姓名：${data.name || '未填写'}`,
                     `联系方式：${data.contact || '未填写'}`,
+                    '',
+                    `主题：${data.subject}`,
                     '',
                     '留言：',
                     data.body
